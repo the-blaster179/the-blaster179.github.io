@@ -1,1 +1,58 @@
-Hello world
+<?PHP
+
+require_once('./includes/session.inc.php');
+
+?>
+
+<html>
+	<head>
+		<title>Register</title>
+	</head>
+	<body>
+		<style type="text/css">
+			body {
+				background-color: FFFFBB
+			}
+		</style>
+		
+		<?PHP
+			/* This validates the data sent from the
+			   HTML form below and if it is valid,
+			   the data is put into the session and
+			   the user is then redirected to the
+			   next page loggedin.php
+			   
+			   Author: Benjamin Woods (bw)
+			   Version: 1.0 (bw) - Initial Release
+						1.1 (bw) - Bug fixes
+			*/
+			
+			# Gets the user and pass from the HTML and stripslashes() them to prevent code from being run
+			$user = stripslashes($_POST['user']);
+			$pass = stripslashes($_POST['pass']);
+			$url = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']);
+			$url .= '/loggedin.php/';
+			
+			if (!empty($user) && !empty($pass)) {
+				# Encrypts the password using the sha1 hash
+				$pass = SHA1($pass);
+				$_SESSION["user"] = $user;
+				$_SESSION["pass"] = $pass;
+				die("<script>location.href = 'loggedin.php'</script>"); // https://www.stackoverflow.com/questions/18206797/need-to-redirect-url-without-using-the-function-header - Redirects the user to loggedin.php
+			} else {
+				if(isset($_POST['user']) && isset($_POST['pass'])) {
+					echo "<p><b>Error: You did not enter a username and/or password. Please try again.</b></p>";
+				}
+			}
+		?>
+		
+		<p style="font-family:Arial;font-size:36;">Register</p>
+		<br />
+		<form action="index.php" method="post">
+		<fieldset><legend>Please fill out the form below to register</legend>
+			<p><b>Username:</b> <input type="text" name="user" size="20" maxlength="40" /></p>
+			<p><b>Password:</b> <input type="password" name="pass" size="20" maxlength="40" /></p>
+			<div align="left"><input type="submit" name="submit" value="Submit Information" />
+		</fieldset></form>
+	</body>
+</html>
