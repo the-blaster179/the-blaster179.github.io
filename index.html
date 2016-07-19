@@ -1,7 +1,33 @@
 <?PHP
-
-require_once('./includes/session.inc.php');
-
+	require_once('./includes/session.inc.php');
+	
+	/* This validates the data sent from the
+	   HTML form below and if it is valid,
+	   the data is put into the session and
+	   the user is then redirected to the
+	   next page loggedin.php
+  
+	   Author: Benjamin Woods (bw)
+	   Date Started: 19/07/2016
+	*/
+	
+	# Gets the user and pass from the HTML and stripslashes() them to prevent code from being run
+	$user = stripslashes($_POST['user']);
+	$pass = stripslashes($_POST['pass']);
+	$url = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']);
+	$url .= '/loggedin.php/';
+			
+	if (!empty($user) && !empty($pass)) {
+		# Encrypts the password using the sha1 hash
+		$pass = SHA1($pass);
+		$_SESSION["user"] = $user;
+		$_SESSION["pass"] = $pass;
+		header( 'Location: ' . $url ) ;
+	} else {
+		if(isset($_POST['user']) && isset($_POST['pass'])) {
+			echo "<p><b>Error: You did not enter a username and/or password. Please try again.</b></p>";
+		}
+	}
 ?>
 
 <html>
@@ -38,7 +64,6 @@ require_once('./includes/session.inc.php');
 				$pass = SHA1($pass);
 				$_SESSION["user"] = $user;
 				$_SESSION["pass"] = $pass;
-				die("<script>location.href = 'loggedin.php'</script>");
 			} else {
 				if(isset($_POST['user']) && isset($_POST['pass'])) {
 					echo "<p><b>Error: You did not enter a username and/or password. Please try again.</b></p>";
